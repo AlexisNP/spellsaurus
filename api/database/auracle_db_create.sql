@@ -163,19 +163,24 @@ INSERT INTO `permission` (slug) VALUES
 ("MODIFY_SPELLS"),
 ("DELETE_SPELLS"),
 ("WARN_USERS"),
-("BAN_USERS");
+("BAN_USERS"),
+("SECRET_SPELLS"),
+("SECRET_USERS");
 
 INSERT INTO `role_permission` (role_id, permission_id) VALUES
 (2, 1),
 (3, 1),
 (3, 2),
 (3, 3),
+(3, 7),
 (4, 1),
 (4, 2),
 (4, 3),
 (4, 4),
 (4, 5),
-(4, 6);
+(4, 6),
+(4, 7),
+(4, 8);
 
 -- USERS
 INSERT INTO `user` (uuid, name, mail, avatar, gender, register_date, password, role_id, verified, banned) VALUES

@@ -13,9 +13,9 @@ const mails = require('../smtp/mails');
 
 // Model validation
 const Validator = require('jsonschema').Validator;
-const v = new Validator();
+const validator = new Validator();
 const UserValidation = require("../validations/UserValidation");
-v.addSchema(UserValidation, "/UserValidation");
+validator.addSchema(UserValidation, "/UserValidation");
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt;
@@ -35,17 +35,17 @@ class UserRepository {
     getAll() {
         return new Promise((resolve, reject) => {
             new model()
-            .fetchAll({ withRelated: [ 'role.permissions' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }));
-            })
-            .catch(err => {
-                console.log(err)
-                reject({
-                    "message": "Erreur de base de données, les utilisateurs n'ont pas pu être récupérés.",
-                    "code": 500,
-                });
-            })
+                .fetchAll({ withRelated: ['role.permissions'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }));
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject({
+                        "message": "Erreur de base de données, les utilisateurs n'ont pas pu être récupérés.",
+                        "code": 500,
+                    });
+                })
         })
     }
 
@@ -70,17 +70,17 @@ class UserRepository {
             }
 
             new model()
-            .where({ 'uuid' : uuid })
-            .fetch({ withRelated: [ 'role.permissions' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true, visibility: !full }));
-            })
-            .catch(() => {
-                reject({
-                    "message": "L'utilisateur avec cet UUID n'a pas été trouvé.",
-                    "code": 404,
-                });
-            })
+                .where({ 'uuid': uuid })
+                .fetch({ withRelated: ['role.permissions'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true, visibility: !full }));
+                })
+                .catch(() => {
+                    reject({
+                        "message": "L'utilisateur avec cet UUID n'a pas été trouvé.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
@@ -105,17 +105,17 @@ class UserRepository {
             }
 
             new model()
-            .where({ 'mail': mail })
-            .fetch({ withRelated: [ 'role' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true, visibility: !full }));
-            })
-            .catch(() => {
-                reject({
-                    "message": "L'utilisateur avec cet email n'a pas été trouvé.",
-                    "code": 404,
+                .where({ 'mail': mail })
+                .fetch({ withRelated: ['role'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true, visibility: !full }));
+                })
+                .catch(() => {
+                    reject({
+                        "message": "L'utilisateur avec cet email n'a pas été trouvé.",
+                        "code": 404,
+                    });
                 });
-            });
         })
     }
 
@@ -137,17 +137,17 @@ class UserRepository {
             }
 
             new model()
-            .where({ 'uuid': uuid })
-            .fetch({ withRelated: [ 'role', 'spells.schools.meta_schools', 'spells.variables', 'spells.ingredients' ] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }));
-            })
-            .catch(() => {
-                reject({
-                    "message": "Les sorts liés à cet utilisateur n'ont pas été trouvés.",
-                    "code": 404,
+                .where({ 'uuid': uuid })
+                .fetch({ withRelated: ['role', 'spells.schools.meta_schools', 'spells.variables', 'spells.ingredients'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }));
+                })
+                .catch(() => {
+                    reject({
+                        "message": "Les sorts liés à cet utilisateur n'ont pas été trouvés.",
+                        "code": 404,
+                    });
                 });
-            });
         })
     }
 
@@ -165,12 +165,12 @@ class UserRepository {
             // Checks if body exists and if the model fits, and throws errors if it doesn't
             if (isEmptyObject(u)) {
                 reject({
-                    "message":  "Le corps de requête ne peut être vide.",
+                    "message": "Le corps de requête ne peut être vide.",
                     "code": 403,
                 })
-            } else if (!v.validate(u, UserValidation).valid) {
+            } else if (!validator.validate(u, UserValidation).valid) {
                 reject({
-                    "message":  "Structure de la requête invalide - " + v.validate(u, UserValidation).errors,
+                    "message": "Structure de la requête invalide - " + validator.validate(u, UserValidation).errors,
                     "code": 403,
                 })
             } else if (isXSSAttempt(u.name) || isXSSAttempt(u.password) || isXSSAttempt(u.mail)) {
@@ -185,58 +185,58 @@ class UserRepository {
                 let verification_token = uuidv4();
 
                 this.checkIfEmailAvailable(u.mail)
-                .then(() => {
-                    bookshelf.transaction(t => {
-                        return new model({
-                            'uuid': uuid,
-                            'name': u.name,
-                            'mail': u.mail,
-                            'password': hash,
-                            'verification_token': verification_token,
-                        })
-                        .save(null, {
-                            transacting: t
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            reject({
-                                "message": "Un attribut de l'utilisateur a provoqué une erreur d'insertion.",
-                                "code": 500,
-                            });
-                        })
-                    })
                     .then(() => {
-                        return this.getOneByUUID(uuid, false)
-                    })
-                    .then(newUser => {
+                        bookshelf.transaction(t => {
+                            return new model({
+                                'uuid': uuid,
+                                'name': u.name,
+                                'mail': u.mail,
+                                'password': hash,
+                                'verification_token': verification_token,
+                            })
+                                .save(null, {
+                                    transacting: t
+                                })
+                                .catch(err => {
+                                    console.log(err);
+                                    reject({
+                                        "message": "Un attribut de l'utilisateur a provoqué une erreur d'insertion.",
+                                        "code": 500,
+                                    });
+                                })
+                        })
+                            .then(() => {
+                                return this.getOneByUUID(uuid, false)
+                            })
+                            .then(newUser => {
 
-                        // Send a mail to the new user's email with a link to verification url
-                        mails.sendRegistrationMail({
-                            user: {
-                                name: newUser.name,
-                                mail: newUser.mail,
-                                token: verification_token,
-                            }
-                        });
+                                // Send a mail to the new user's email with a link to verification url
+                                mails.sendRegistrationMail({
+                                    user: {
+                                        name: newUser.name,
+                                        mail: newUser.mail,
+                                        token: verification_token,
+                                    }
+                                });
 
-                        // Then resolves the api call
-                        resolve({
-                            "message": `Compte utilisateur #${newUser.id} créé avec succès.`,
-                            "code": 201,
-                            "user": newUser,
-                        });
+                                // Then resolves the api call
+                                resolve({
+                                    "message": `Compte utilisateur #${newUser.id} créé avec succès.`,
+                                    "code": 201,
+                                    "user": newUser,
+                                });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                resolve({
+                                    "message": "Une erreur s'est produite en créant votre compte. Veuillez réessayer ultérieurement ou contactez l'administrateur.",
+                                    "code": 500,
+                                })
+                            })
                     })
                     .catch(err => {
-                        console.log(err);
-                        resolve({
-                            "message": "Une erreur s'est produite en créant votre compte. Veuillez réessayer ultérieurement ou contactez l'administrateur.",
-                            "code": 500,
-                        })
+                        reject(err)
                     })
-                })
-                .catch(err => {
-                    reject(err)
-                })
             }
         })
     }
@@ -252,31 +252,31 @@ class UserRepository {
     verifyUser(token) {
         return new Promise((resolve, reject) => {
             new model()
-            .where({ 'verification_token' : token })
-            .fetch()
-            .then(v => {
-                bookshelf.transaction(t => {
-                    return v.save({
-                        'verification_token': null,
-                        'verified': 1,
-                    }, {
-                        method: 'update',
-                        transacting: t
+                .where({ 'verification_token': token })
+                .fetch()
+                .then(v => {
+                    bookshelf.transaction(t => {
+                        return v.save({
+                            'verification_token': null,
+                            'verified': 1,
+                        }, {
+                            method: 'update',
+                            transacting: t
+                        })
+                    })
+                        .then(() => {
+                            resolve({
+                                "message": "Insérez ici une future redirection vers le client.",
+                                "code": 202,
+                            })
+                        })
+                })
+                .catch(() => {
+                    reject({
+                        "message": "Le lien de vérification ne semble pas correct.",
+                        "code": 404,
                     })
                 })
-                .then(() => {
-                  resolve({
-                      "message": "Insérez ici une future redirection vers le client.",
-                      "code": 202,
-                  })
-                })
-            })
-            .catch(() => {
-                reject({
-                    "message": "Le lien de vérification ne semble pas correct.",
-                    "code": 404,
-                })
-            })
         });
     }
 
@@ -292,44 +292,44 @@ class UserRepository {
     logUser(mail, password) {
         return new Promise((resolve, reject) => {
             this.getOneByEmail(mail, true)
-            .then(async fetchedUser => {
+                .then(async fetchedUser => {
 
-                let match = await bcrypt.compare(password, fetchedUser.password);
+                    let match = await bcrypt.compare(password, fetchedUser.password);
 
-                // Makes sure no hash gets out
-                delete fetchedUser.password;
+                    // Makes sure no hash gets out
+                    delete fetchedUser.password;
 
-                // If you found a user...
-                if (match) {
-                    // If they're banned...
-                    if (fetchedUser.banned) {
-                        reject({
-                            "message":  `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
-                            "code": 403,
-                        });
-                    // If they're not verified...
-                    } else if (!fetchedUser.verified) {
-                        reject({
-                            "message":  `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
-                            "code": 401,
-                        });
+                    // If you found a user...
+                    if (match) {
+                        // If they're banned...
+                        if (fetchedUser.banned) {
+                            reject({
+                                "message": `L'utilisateur #${fetchedUser.name} a été banni, la connexion est impossible.`,
+                                "code": 403,
+                            });
+                            // If they're not verified...
+                        } else if (!fetchedUser.verified) {
+                            reject({
+                                "message": `L'utilisateur #${fetchedUser.name} n'as pas été vérifié, le compte doit être activé avant la connexion.`,
+                                "code": 401,
+                            });
+                        } else {
+                            resolve({
+                                "message": `L'utilisateur #${fetchedUser.name} s'est connecté.`,
+                                "code": 200,
+                                "user": fetchedUser,
+                            });
+                        }
                     } else {
-                        resolve({
-                            "message": `L'utilisateur #${fetchedUser.name} s'est connecté.`,
-                            "code": 200,
-                            "user": fetchedUser,
+                        reject({
+                            "message": "Les informations de connexions sont erronées.",
+                            "code": 400,
                         });
                     }
-                } else {
-                    reject({
-                        "message": "Les informations de connexions sont erronées.",
-                        "code": 400,
-                    });
-                }
-            })
-            .catch(err => {
-                reject(err);
-            })
+                })
+                .catch(err => {
+                    reject(err);
+                })
         })
     }
 
@@ -346,54 +346,139 @@ class UserRepository {
     genAPIToken(mail, password) {
         return new Promise((resolve, reject) => {
             this.logUser(mail, password)
-            .then(v => {
-                let user = v.user;
-                let new_token = uuidv4();
+                .then(v => {
+                    let user = v.user;
+                    let new_token = uuidv4();
 
-                bookshelf.transaction(t => {
-                    return new token_model({
-                        'value': new_token,
-                        'user_uuid': user.uuid,
-                    })
-                    .save(null, {
-                        transacting: t
-                    })
-                    .catch(err => {
-                        // If the account already has an API key linked...
-                        if (err.errno == 1062) {
-                            this.fetchAPIKey(user.uuid)
-                            .then(old_api_key => {
-                                reject({
-                                    "message": "Votre compte a déjà généré une clé d'API.",
-                                    "code": 409,
-                                    "API_key": old_api_key.value,
-                                });
+                    bookshelf.transaction(t => {
+                        return new token_model({
+                            'value': new_token,
+                            'user_uuid': user.uuid,
+                        })
+                            .save(null, {
+                                transacting: t
+                            })
+                            .catch(err => {
+                                // If the account already has an API key linked...
+                                if (err.errno == 1062) {
+                                    this.fetchAPIKey(user.uuid)
+                                        .then(old_api_key => {
+                                            reject({
+                                                "message": "Votre compte a déjà généré une clé d'API.",
+                                                "code": 409,
+                                                "API_key": old_api_key.value,
+                                            });
+                                        });
+
+                                    // Default errors
+                                } else {
+                                    throw err
+                                }
                             });
-
-                        // Default errors
-                        } else {
-                            throw err
-                        }
-                    });
-                })
-                .then(api_key => {
-                    resolve({
-                        "message": "La clé d'API a été généré.",
-                        "code": 201,
-                        "API_key": api_key,
                     })
+                        .then(api_key => {
+                            resolve({
+                                "message": "La clé d'API a été généré.",
+                                "code": 201,
+                                "API_key": api_key,
+                            })
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            reject({
+                                "message": "La génération de jeton d'API n'a pas pu être conclue.",
+                                "code": 500,
+                            });
+                        })
                 })
                 .catch(err => {
-                    console.log(err);
-                    reject({
-                      "message": "La génération de jeton d'API n'a pas pu être conclue.",
-                      "code": 500,
+                    reject(err);
+                })
+        })
+    }
+
+    checkAPITokenPerms(token, permissions) {
+        return new Promise(async (resolve, reject) => {
+
+            // If the request doesn't have a token, reject it.
+            if (!token) {
+                reject({
+                    "message": "Vous devez utiliser un jeton d'API dans l'en-tête de votre requête.",
+                    "code": 401,
+                })
+            }
+
+            // Fetches user from token
+            new token_model()
+                .where({ 'value': token })
+                .fetch({ withRelated: 'user.role.permissions' })
+
+                // Catches not found errors
+                .catch(err => {
+                    if (err instanceof token_model.NotFoundError) {
+                        reject({
+                            "message": "Ce jeton n'est affilié à aucun compte.",
+                            "code": 404,
+                        });
+                    } else {
+                        reject({
+                            "message": "Le jeton ou l'utilisateur n'a pas pu être récupéré.",
+                            "code": 500,
+                        });
+                    }
+                })
+
+                .then(fullToken => {
+                    token = fullToken.toJSON({ omitPivot: true });
+
+                    // If the token is associated with a banned user...
+                    if (token.user.banned) {
+                        reject({
+                            "message": "Le jeton est lié à un utilisateur banni, il n'est donc plus utilisable.",
+                            "code": 401,
+                        });
+                    }
+
+                    // If the token is associated with a non-verified user...
+                    if (!token.user.verified) {
+                        reject({
+                            "message": "Le jeton est lié à un utilisateur non-vérifié, il n'est donc pas utilisable.",
+                            "code": 401,
+                        });
+                    }
+
+                    let user_permissions = token.user.role.permissions;
+
+                    // Convert user_perm to array
+                    user_permissions.forEach((user_perm, i) => {
+                        user_permissions[i] = user_perm.slug;
+                    });
+
+                    // Loops to check if the person has all the permissions required...
+                    permissions.forEach(perm => {
+                        // If not, reject...
+                        if (!user_permissions.includes(perm)) {
+                            reject({
+                                "message": "Permissions insuffisantes.",
+                                "code": 401
+                            })
+                        }
+                    });
+
+                    // If everything went well, resolve the promise.
+                    resolve({
+                        "message": "Credentials accepted.",
+                        "code": 200
                     });
                 })
-            })
-            .catch(err => {
-                reject(err);
-            })
+
+                // Unhandled errors
+                .catch(err => {
+                    reject({
+                        "message": "Une erreur inconnue est survenue.",
+                        "code": 500,
+                    });
+                });
         })
     }
 
@@ -424,18 +509,18 @@ class UserRepository {
             }
 
             this.getOneByEmail(mail, false)
-            .then(() => {
-                reject({
-                    "message": "Cet email est déjà lié à un compte.",
-                    "code": 409,
+                .then(() => {
+                    reject({
+                        "message": "Cet email est déjà lié à un compte.",
+                        "code": 409,
+                    })
                 })
-            })
-            .catch(() => {
-                resolve({
-                  "message": "Cet email est disponible.",
-                  "code": 200,
-              })
-            })
+                .catch(() => {
+                    resolve({
+                        "message": "Cet email est disponible.",
+                        "code": 200,
+                    })
+                })
         })
     }
 
@@ -450,14 +535,14 @@ class UserRepository {
     fetchAPIKey(uuid) {
         return new Promise((resolve, reject) => {
             new token_model()
-            .where({ 'user_uuid': uuid })
-            .fetch()
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }));
-            })
-            .catch(err => {
-                console.log(err);
-            })
+                .where({ 'user_uuid': uuid })
+                .fetch()
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }));
+                })
+                .catch(err => {
+                    console.log(err);
+                })
         })
     }
 

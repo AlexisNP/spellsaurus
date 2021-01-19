@@ -19,10 +19,10 @@ const routes = require('./routes');
 let app = express();
 app.use(bodyParser.json({ limit: '10kb' }));
 app.use(cors({
-  origin: [
-      "http://localhost:8080",
-  ],
-  credentials: true,
+    origin: [
+        "http://localhost:8080",
+    ],
+    credentials: true,
 }));
 app.use(morgan('dev'));
 app.use(helmet());
@@ -31,7 +31,7 @@ app.use(helmet());
 app.listen(port, () => console.log(`App listening on port ${port}`));
 
 // Entry route
-app.use('/api/v1/', routes.auth );
+app.use('/api/v1/', routes.auth);
 
 // Routing
 app.use('/api/v1/spells', routes.spells);

@@ -5,9 +5,9 @@ const model = require('../models/school-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const SchoolValidation = require("../validations/SchoolValidation")
-v.addSchema(SchoolValidation, "/SchoolValidation")
+validator.addSchema(SchoolValidation, "/SchoolValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -21,53 +21,53 @@ class SchoolRepository {
     getAll() {
         return new Promise((resolve, reject) => {
             new model()
-            .fetchAll({ withRelated: ['meta_schools'] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
-            })
-            .catch(err => {
-                console.log(err);
-                reject({
-                    "message": "Il n'existe aucune école disponible.",
-                    "code": 404,
-                });
-            })
+                .fetchAll({ withRelated: ['meta_schools'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }))
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject({
+                        "message": "Il n'existe aucune école disponible.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
     getOne(id) {
         return new Promise((resolve, reject) => {
             new model()
-            .where({ 'id' : id })
-            .fetch({ withRelated: ['meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
-            })
-            .catch(err => {
-                console.log(err);
-                reject({
-                    "message": "L'école en question n'a pas pu être trouvée.",
-                    "code": 404,
-                });
-            })
+                .where({ 'id': id })
+                .fetch({ withRelated: ['meta_schools'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }))
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject({
+                        "message": "L'école en question n'a pas pu être trouvée.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
     getSpellsFromOne(id) {
         return new Promise((resolve, reject) => {
             new model()
-            .where({ 'id' : id })
-            .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
-            })
-            .catch(err => {
-                console.log(err);
-                reject({
-                    "message": "Les sortilèges de cette école n'ont pas pu être récupérés.",
-                    "code": 404,
-                });
-            })
+                .where({ 'id': id })
+                .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }))
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject({
+                        "message": "Les sortilèges de cette école n'ont pas pu être récupérés.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
@@ -79,9 +79,9 @@ class SchoolRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(s, SchoolValidation).valid) {
+            } else if (!validator.validate(s, SchoolValidation).valid) {
                 reject({
-                    "message": `Le modèle d'école n'est pas respecté : ${v.validate(s, SchoolValidation).errors}`,
+                    "message": `Le modèle d'école n'est pas respecté : ${validator.validate(s, SchoolValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
@@ -98,23 +98,23 @@ class SchoolRepository {
                     }).save(null, {
                         transacting: t
                     })
+                        .catch(err => {
+                            throw err
+                        })
+                })
+                    .then(v => {
+                        return v.load(['meta_schools']);
+                    })
+                    .then(v => {
+                        resolve(this.getOne(v.id));
+                    })
                     .catch(err => {
-                        throw err
+                        console.log(err)
+                        reject({
+                            "message": "Une erreur d'insertion s'est produite.",
+                            "code": 500,
+                        })
                     })
-                })
-                .then(v => {
-                    return v.load(['meta_schools']);
-                })
-                .then(v => {
-                    resolve(this.getOne(v.id));
-                })
-                .catch(err => {
-                    console.log(err)
-                    reject({
-                        "message": "Une erreur d'insertion s'est produite.",
-                        "code": 500,
-                    })
-                })
             }
         })
     }
@@ -127,9 +127,9 @@ class SchoolRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(s, SchoolValidation).valid) {
+            } else if (!validator.validate(s, SchoolValidation).valid) {
                 reject({
-                    "message": `Le modèle d'école n'est pas respecté : ${v.validate(s, SchoolValidation).errors}`,
+                    "message": `Le modèle d'école n'est pas respecté : ${validator.validate(s, SchoolValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(s.name) || isXSSAttempt(s.description)) {
@@ -138,35 +138,60 @@ class SchoolRepository {
                     "code": 403,
                 });
             } else {
-                new model({id: id})
-                .fetch({require: true, withRelated: ['meta_schools']})
-                .then(v => {
-                    bookshelf.transaction(t => {
-                        return v.save({
-                            'name': s.name,
-                            'description': s.description,
-                            'meta_school_id': s.meta_school_id
-                        }, {
-                            method: 'update',
-                            transacting: t
-                        })
-                        .catch(err => {
-                            console.log(err)
-                            throw err
-                        })
-                    })
+                new model({ id: id })
+                    .fetch({ require: true, withRelated: ['meta_schools'] })
                     .then(v => {
-                        return v.load(['meta_schools'])
-                    })
-                    .then(v => {
-                        resolve(this.getOne(v.id))
+                        bookshelf.transaction(t => {
+                            return v.save({
+                                'name': s.name,
+                                'description': s.description,
+                                'meta_school_id': s.meta_school_id
+                            }, {
+                                method: 'update',
+                                transacting: t
+                            })
+                                .catch(err => {
+                                    console.log(err)
+                                    throw err
+                                })
+                        })
+                            .then(v => {
+                                return v.load(['meta_schools'])
+                            })
+                            .then(v => {
+                                resolve(this.getOne(v.id))
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                reject({
+                                    "message": "Une erreur d'insertion s'est produite.",
+                                    "code": 500,
+                                })
+                            })
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log(err);
                         reject({
-                            "message": "Une erreur d'insertion s'est produite.",
-                            "code": 500,
-                        })
+                            "message": "L'école en question n'a pas été trouvée.",
+                            "code": 404,
+                        });
+                    })
+            }
+        })
+    }
+
+    deleteOne(id) {
+        return new Promise((resolve, reject) => {
+            new model()
+                .where({ 'id': id })
+                .fetch({ require: true, withRelated: ['spells', 'meta_schools'] })
+                .then(v => {
+                    v.spells().detach()
+                    v.destroy()
+                })
+                .then(() => {
+                    resolve({
+                        'message': 'School with ID ' + id + ' successfully deleted !'
                     })
                 })
                 .catch(err => {
@@ -176,31 +201,6 @@ class SchoolRepository {
                         "code": 404,
                     });
                 })
-            }
-        })
-    }
-
-    deleteOne(id) {
-        return new Promise((resolve, reject) => {
-            new model()
-            .where({ 'id' : id })
-            .fetch({require: true, withRelated: ['spells', 'meta_schools']})
-            .then(v => {
-                v.spells().detach()
-                v.destroy()
-            })
-            .then(() => {
-                resolve({
-                    'message': 'School with ID ' + id + ' successfully deleted !'
-                })
-            })
-            .catch(err => {
-                console.log(err);
-                reject({
-                    "message": "L'école en question n'a pas été trouvée.",
-                    "code": 404,
-                });
-            })
         })
     }
 }

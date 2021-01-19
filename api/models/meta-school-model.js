@@ -6,7 +6,7 @@ require('./school-model')
 let MetaSchool = bookshelf.Model.extend({
     tableName: 'meta_school',
     schools() {
-        return this.hasMany( 'School' )
+        return this.hasMany('School')
     }
 })
 

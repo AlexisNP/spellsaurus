@@ -11,9 +11,9 @@ const paramIntCheck = (req, res, next, input) => {
         }
     } catch (err) {
         res.status(err.code).send(JSON.stringify({
-              "message": "Le paramètre doit être un entier non-nul.",
-              "code": 403,
-          })
+            "message": "Le paramètre doit être un entier non-nul.",
+            "code": 403,
+        })
         )
     }
 }

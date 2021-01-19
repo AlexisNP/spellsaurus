@@ -5,10 +5,10 @@ require('./user-model');
 
 let APIToken = bookshelf.Model.extend({
     tableName: 'api_token',
-    hidden: [ 'id' ],
+    hidden: ['id'],
     user() {
-        return this.hasOne( 'User', 'user_uuid' );
+        return this.belongsTo('User', 'user_uuid', 'uuid');
     }
 })
 
-module.exports = bookshelf.model( 'APIToken', APIToken );
+module.exports = bookshelf.model('APIToken', APIToken);
