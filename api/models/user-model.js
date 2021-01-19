@@ -6,12 +6,12 @@ require('./spell-model');
 
 let User = bookshelf.Model.extend({
     tableName: 'user',
-    hidden: [ 'password' ],
+    hidden: ['password', 'role_id'],
     role() {
-        return this.belongsTo( 'Role' );
+        return this.belongsTo('Role');
     },
     spells() {
-        return this.hasMany( 'Spell', 'author_id' );
+        return this.hasMany('Spell', 'author_id');
     }
 })
 

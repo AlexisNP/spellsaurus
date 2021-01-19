@@ -5,9 +5,9 @@ const model = require('../models/variable-model')
 
 // Model validation
 const Validator = require('jsonschema').Validator
-const v = new Validator()
+const validator = new Validator()
 const VariableValidation = require("../validations/VariableValidation")
-v.addSchema(VariableValidation, "/VariableValidation")
+validator.addSchema(VariableValidation, "/VariableValidation")
 
 // Validations
 const isXSSAttempt = require('../functions').isXSSAttempt
@@ -17,58 +17,58 @@ class VariableRepository {
 
     constructor() {
     }
-    
+
     getAll() {
         return new Promise((resolve, reject) => {
             new model()
-            .fetchAll({ withRelated: ['spells'] })
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
-            })
-            .catch(err => {
-                console.log(err)
-                reject({
-                    "message": "Il n'existe aucune variable disponible.",
-                    "code": 404,
-                });
-            })
+                .fetchAll({ withRelated: ['spells'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }))
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject({
+                        "message": "Il n'existe aucune variable disponible.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
-    
+
     getOne(id) {
         return new Promise((resolve, reject) => {
             new model()
-            .where({ 'id' : id })
-            .fetch({ withRelated: ['spells']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
-            })
-            .catch(err => {
-                console.log(err)
-                reject({
-                    "message": "La variable en question n'a pas pu être trouvée.",
-                    "code": 404,
-                });
-            })
+                .where({ 'id': id })
+                .fetch({ withRelated: ['spells'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }))
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject({
+                        "message": "La variable en question n'a pas pu être trouvée.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
     getSpellsFromOne(id) {
         return new Promise((resolve, reject) => {
             new model()
-            .where({ 'id' : id })
-            .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools']})
-            .then(v => {
-                resolve(v.toJSON({ omitPivot: true }))
-            })
-            .catch(err => {
-                console.log(err)
-                reject({
-                    "message": "Les sortilèges liés à cette variable n'ont pas pu être récupérés.",
-                    "code": 404,
-                });
-            })
+                .where({ 'id': id })
+                .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools'] })
+                .then(v => {
+                    resolve(v.toJSON({ omitPivot: true }))
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject({
+                        "message": "Les sortilèges liés à cette variable n'ont pas pu être récupérés.",
+                        "code": 404,
+                    });
+                })
         })
     }
 
@@ -80,9 +80,9 @@ class VariableRepository {
                     "message": "Le corps de la requête ne peut pas être vide.",
                     "code": 403,
                 });
-            } else if (!v.validate(vr, VariableValidation).valid) {
+            } else if (!validator.validate(vr, VariableValidation).valid) {
                 reject({
-                    "message": `Le modèle de variable n'est pas respecté : ${v.validate(s, VariableValidation).errors}`,
+                    "message": `Le modèle de variable n'est pas respecté : ${validator.validate(s, VariableValidation).errors}`,
                     "code": 403,
                 });
             } else if (isXSSAttempt(vr.description)) {
@@ -97,61 +97,10 @@ class VariableRepository {
                     }).save(null, {
                         transacting: t
                     })
-                    .catch(err => {
-                        throw err
-                    })
-                })
-                .then(v => {
-                    return v.load(['spells'])
-                })
-                .then(v => {
-                    resolve(this.getOne(v.id))
-                })
-                .catch(err => {
-                    console.log(err)
-                    reject({
-                        "message": "Une erreur d'insertion s'est produite.",
-                        "code": 500,
-                    });
-                })
-            }
-        })
-    }
-
-    updateOne(id, vr) {
-        return new Promise((resolve, reject) => {
-            // Checks if body exists and if the model fits, and throws errors if it doesn't
-            if (isEmptyObject(vr)) {
-                reject({
-                    "message": "Le corps de la requête ne peut pas être vide.",
-                    "code": 403,
-                });
-            } else if (!v.validate(vr, VariableValidation).valid) {
-                reject({
-                    "message": `Le modèle de variable n'est pas respecté : ${v.validate(s, VariableValidation).errors}`,
-                    "code": 403,
-                });
-            } else if (isXSSAttempt(vr.description)) {
-                reject({
-                    "message": "Tentative d'injection XSS détectée, requête refusée.",
-                    "code": 403,
-                });
-            } else {
-                new model({id: id})
-                .fetch({require: true, withRelated: ['spells']})
-                .then(v => {
-                    bookshelf.transaction(t => {
-                        return v.save({
-                            'description': vr.description,
-                        }, {
-                            method: 'update',
-                            transacting: t
-                        })
                         .catch(err => {
-                            console.log(err)
                             throw err
                         })
-                    })
+                })
                     .then(v => {
                         return v.load(['spells'])
                     })
@@ -165,6 +114,82 @@ class VariableRepository {
                             "code": 500,
                         });
                     })
+            }
+        })
+    }
+
+    updateOne(id, vr) {
+        return new Promise((resolve, reject) => {
+            // Checks if body exists and if the model fits, and throws errors if it doesn't
+            if (isEmptyObject(vr)) {
+                reject({
+                    "message": "Le corps de la requête ne peut pas être vide.",
+                    "code": 403,
+                });
+            } else if (!validator.validate(vr, VariableValidation).valid) {
+                reject({
+                    "message": `Le modèle de variable n'est pas respecté : ${validator.validate(s, VariableValidation).errors}`,
+                    "code": 403,
+                });
+            } else if (isXSSAttempt(vr.description)) {
+                reject({
+                    "message": "Tentative d'injection XSS détectée, requête refusée.",
+                    "code": 403,
+                });
+            } else {
+                new model({ id: id })
+                    .fetch({ require: true, withRelated: ['spells'] })
+                    .then(v => {
+                        bookshelf.transaction(t => {
+                            return v.save({
+                                'description': vr.description,
+                            }, {
+                                method: 'update',
+                                transacting: t
+                            })
+                                .catch(err => {
+                                    console.log(err)
+                                    throw err
+                                })
+                        })
+                            .then(v => {
+                                return v.load(['spells'])
+                            })
+                            .then(v => {
+                                resolve(this.getOne(v.id))
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                reject({
+                                    "message": "Une erreur d'insertion s'est produite.",
+                                    "code": 500,
+                                });
+                            })
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        reject({
+                            "message": "La variable en question n'a pas été trouvée.",
+                            "code": 404,
+                        });
+                    })
+            }
+        })
+    }
+
+    deleteOne(id) {
+        return new Promise((resolve, reject) => {
+            new model()
+                .where({ 'id': id })
+                .fetch({ require: true, withRelated: ['spells'] })
+                .then(v => {
+                    v.spells().detach()
+                    v.destroy()
+                })
+                .then(() => {
+                    resolve({
+                        'message': 'Variable with ID ' + id + ' successfully deleted !'
+                    })
                 })
                 .catch(err => {
                     console.log(err)
@@ -173,31 +198,6 @@ class VariableRepository {
                         "code": 404,
                     });
                 })
-            }
-        })
-    }
-
-    deleteOne(id) {
-        return new Promise((resolve, reject) => {
-            new model()
-            .where({ 'id' : id })
-            .fetch({require: true, withRelated: ['spells']})
-            .then(v => {
-                v.spells().detach()
-                v.destroy()
-            })
-            .then(() => {
-                resolve({
-                    'message': 'Variable with ID ' + id + ' successfully deleted !'
-                })
-            })
-            .catch(err => {
-                console.log(err)
-                reject({
-                    "message": "La variable en question n'a pas été trouvée.",
-                    "code": 404,
-                });
-            })
         })
     }
 }

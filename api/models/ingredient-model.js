@@ -6,7 +6,7 @@ require('./spell-model')
 let Ingredient = bookshelf.Model.extend({
     tableName: 'ingredient',
     spells() {
-        return this.belongsToMany( 'Spell', 'spell_ingredient')
+        return this.belongsToMany('Spell', 'spell_ingredient')
     }
 })
 

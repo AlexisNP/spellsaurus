@@ -6,7 +6,7 @@ USE auracle;
 
 -- ROLES
 CREATE TABLE IF NOT EXISTS `role` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `name` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NOT NULL,
     PRIMARY KEY(`id`)
@@ -14,15 +14,15 @@ CREATE TABLE IF NOT EXISTS `role` (
 
 -- PERMISSIONS
 CREATE TABLE IF NOT EXISTS `permission` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `slug` VARCHAR(255) NOT NULL,
     PRIMARY KEY(`id`)
 );
 
 -- USERS
 CREATE TABLE IF NOT EXISTS `user` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `uuid` VARCHAR(36) NOT NULL,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
+    `uuid` VARCHAR(36) NOT NULL UNIQUE,
     `name` VARCHAR(255) NOT NULL DEFAULT "Disciple",
     `mail` VARCHAR(255) NOT NULL,
     `avatar` VARCHAR(255),
@@ -37,16 +37,25 @@ CREATE TABLE IF NOT EXISTS `user` (
     FOREIGN KEY(`role_id`) REFERENCES role(`id`)
 );
 
+-- API_TOKENS
+CREATE TABLE IF NOT EXISTS `api_token` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
+    `value` VARCHAR(255) NOT NULL,
+    `user_uuid` VARCHAR(36) NOT NULL UNIQUE,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`user_uuid`) REFERENCES user(`uuid`)
+);
+
 -- SPELLS
 CREATE TABLE IF NOT EXISTS `spell` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom du sort",
     `description` VARCHAR(1000) NOT NULL DEFAULT "Description du sort",
     `level` INT UNSIGNED DEFAULT 0,
     `charge` INT UNSIGNED DEFAULT 0,
     `cost` VARCHAR(255) DEFAULT 0,
     `is_ritual` BOOLEAN DEFAULT false,
-    `published` BOOLEAN DEFAULT true,
+    `published` BOOLEAN DEFAULT false,
     `public` BOOLEAN DEFAULT true,
     `author_id` INT UNSIGNED NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
@@ -55,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `spell` (
 
 -- META SCHOOLS
 CREATE TABLE IF NOT EXISTS `meta_school` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école mère",
     `description` VARCHAR(255) DEFAULT "Description de l'école mère",
     PRIMARY KEY (`id`)
@@ -63,9 +72,10 @@ CREATE TABLE IF NOT EXISTS `meta_school` (
 
 -- SCHOOLS
 CREATE TABLE IF NOT EXISTS `school` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `name` VARCHAR(255) NOT NULL DEFAULT "Nom de l'école",
     `description` VARCHAR(255) DEFAULT "Description de l'école",
+    `published` BOOLEAN DEFAULT false,
     `meta_school_id` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY(`meta_school_id`) REFERENCES meta_school(`id`)
@@ -73,16 +83,18 @@ CREATE TABLE IF NOT EXISTS `school` (
 
 -- COMMON INGREDIENTS
 CREATE TABLE IF NOT EXISTS `ingredient` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `name` VARCHAR(255) NOT NULL DEFAULT "Langue de salamandre",
     `description` VARCHAR(255) NOT NULL DEFAULT "Une langue de salamandre de feu encore chaude.",
+    `published` BOOLEAN DEFAULT false,
     PRIMARY KEY (`id`)
 );
 
 -- COMMON VARIABLES
 CREATE TABLE IF NOT EXISTS `variable` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     `description` VARCHAR(255) NOT NULL DEFAULT "Nombre de créatures affectées",
+    `published` BOOLEAN DEFAULT false,
     PRIMARY KEY (`id`)
 );
 
@@ -138,53 +150,52 @@ DELIMITER ;
 
 /* =========== PRIMARY INSERTS =========== */
 SET NAMES utf8;
-USE auracle;
 
--- ROLES
-INSERT INTO `role` (name, description) VALUES
-("Visiteur", "Utilisateur normal, peut consulter les sorts."),
-("Scribe", "Gardiens des écrits, les scribes sont capables de soumettre des sortilèges."),
-("Arcanologue", "Maîtres de l'arcane, ils ont le pouvoir et la responsabilité de juger les sortilèges récents et de les supprimer, ou valider."),
-("Augure", "Régents des grimoires, ils ont droit d'accès à l'intégralité des informations connues, et pouvoir absolu sur le savoir arcanique.");
+-- CSV DATA
+LOAD DATA INFILE 'C:/temp/auracle_data/permission.csv'
+  INTO TABLE `permission` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
--- PERMISSIONS
-INSERT INTO `permission` (slug) VALUES
-("SUBMIT_SPELLS"),
-("APPROVE_SPELLS"),
-("MODIFY_SPELLS"),
-("DELETE_SPELLS"),
-("WARN_USERS"),
-("BAN_USERS");
+LOAD DATA INFILE 'C:/temp/auracle_data/role.csv'
+  INTO TABLE `role` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
-INSERT INTO `role_permission` (role_id, permission_id) VALUES
-(2, 1),
-(3, 1),
-(3, 2),
-(3, 3),
-(4, 1),
-(4, 2),
-(4, 3),
-(4, 4),
-(4, 5),
-(4, 6);
+LOAD DATA INFILE 'C:/temp/auracle_data/role_permission.csv'
+  INTO TABLE `role_permission` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
--- USERS
-INSERT INTO `user` (uuid, name, mail, avatar, gender, register_date, password, role_id, verified, banned) VALUES
-("08e5d2cf-3f0b-454f-b03f-504350d6be85", "Izàc", "tymos@ambrose.edu", null, null, "2020-12-27 17:47:02", "$2b$10$8KWGfRmdQ/ya32fROZNrWugXIEOciDaZwLz.3.GzQa5xrJaGF9RP2", 4, 1, 0);
+LOAD DATA INFILE 'C:/temp/auracle_data/user.csv'
+  INTO TABLE `user` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
--- META SCHOOLS
-INSERT INTO `meta_school` (name, description) VALUES
-("Magies blanches", "Magies disciplinant les arts de soins et de lumières."),
-("Magies noires", "Magies disciplinant l'art de la mort et des secrets."),
-("Magies élémentaires", "Magies disciplinant les éléments basiques tels que l'eau, la foudre et le feu, pour n'en citer que les plus populaires."),
-("Magies spirituelles", "Magies disciplinant l'esprit, tant pour le défendre que l'attaquer."),
-("Magies spatio-temporelles", "Magies régissant le temps et l'espace."),
-("Magies affiliées", "Magies rattachées à une forme d'énergie magique particulière."),
-("Magies autres", "Magies trop spécifiques et ne rentrant dans aucune autre grande école.");
+LOAD DATA INFILE 'C:/temp/auracle_data/api_token.csv'
+  INTO TABLE `api_token` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
 
--- CSV FILES
 LOAD DATA INFILE 'C:/temp/auracle_data/spell.csv'
   INTO TABLE `spell` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'C:/temp/auracle_data/meta_school.csv'
+  INTO TABLE `meta_school` 
   FIELDS TERMINATED BY ',' 
   ENCLOSED BY '"'
   LINES TERMINATED BY '\n'
@@ -211,41 +222,9 @@ LOAD DATA INFILE 'C:/temp/auracle_data/variable.csv'
   LINES TERMINATED BY '\n'
   IGNORE 1 ROWS;
 
--- Insertions de masses
-DELIMITER $$
-CREATE PROCEDURE insertIntoSchoolRange(IN delimiter_start INT, IN delimiter_end INT, IN id_school INT)
-BEGIN
-    SET @i = delimiter_start;
-    WHILE @i <= delimiter_end DO
-        INSERT INTO spell_school (spell_id, school_id) VALUES (@i, id_school);
-        SET @i = @i + 1;
-    END WHILE;
-END$$
-DELIMITER ;
-
-CALL insertIntoSchoolRange(1, 33, 1);
-CALL insertIntoSchoolRange(34, 67, 2);
-CALL insertIntoSchoolRange(68, 90, 3);
-CALL insertIntoSchoolRange(91, 119, 4);
-CALL insertIntoSchoolRange(120, 135, 5);
-CALL insertIntoSchoolRange(136, 139, 6);
-CALL insertIntoSchoolRange(140, 165, 7);
-CALL insertIntoSchoolRange(166, 195, 8);
-CALL insertIntoSchoolRange(196, 222, 9);
-CALL insertIntoSchoolRange(223, 247, 10);
-CALL insertIntoSchoolRange(248, 252, 11);
-CALL insertIntoSchoolRange(253, 274, 12);
-CALL insertIntoSchoolRange(275, 292, 13);
-CALL insertIntoSchoolRange(293, 312, 14);
-CALL insertIntoSchoolRange(313, 323, 15);
-CALL insertIntoSchoolRange(324, 343, 16);
-CALL insertIntoSchoolRange(344, 364, 17);
-CALL insertIntoSchoolRange(365, 366, 18);
-CALL insertIntoSchoolRange(367, 383, 19);
-CALL insertIntoSchoolRange(384, 385, 20);
-CALL insertIntoSchoolRange(386, 403, 21);
-CALL insertIntoSchoolRange(404, 435, 22);
-CALL insertIntoSchoolRange(436, 438, 23);
-CALL insertIntoSchoolRange(439, 443, 24);
-CALL insertIntoSchoolRange(444, 455, 25);
-CALL insertIntoSchoolRange(456, 462, 26);
+LOAD DATA INFILE 'C:/temp/auracle_data/spell_school.csv'
+  INTO TABLE `spell_school` 
+  FIELDS TERMINATED BY ',' 
+  ENCLOSED BY '"'
+  LINES TERMINATED BY '\n'
+  IGNORE 1 ROWS;

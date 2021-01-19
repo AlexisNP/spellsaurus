@@ -4,10 +4,10 @@ require('./role-model')
 
 let Permission = bookshelf.Model.extend({
     tableName: 'permission',
-    hidden: [ 'id' ],
+    hidden: ['id'],
     role() {
-        return this.belongsToMany( 'Role', 'role_permission' )
+        return this.belongsToMany('Role', 'role_permission')
     }
 })
 
-module.exports = bookshelf.model( 'Permission', Permission );
+module.exports = bookshelf.model('Permission', Permission);
