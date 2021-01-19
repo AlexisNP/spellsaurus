@@ -133,6 +133,7 @@ const updateSchool = (id, s) => {
 }
 router.put(
     '/:id/',
+    authGuard(['SUBMIT_SCHOOLS', 'MODIFY_SCHOOLS']),
     async (req, res) => {
         updateSchool(req.params.id, req.body)
             .then(v => {
@@ -160,6 +161,7 @@ const deleteSchool = (id) => {
 }
 router.delete(
     '/:id/',
+    authGuard(['SUBMIT_SCHOOLS', 'MODIFY_SCHOOLS', 'DELETE_SCHOOLS']),
     async (req, res) => {
         deleteSchool(req.params.id)
             .then(v => {

@@ -23,21 +23,23 @@ const getIngredients = () => {
             throw err
         })
 }
-router.get('/', async (req, res) => {
-    getIngredients()
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.get(
+    '/',
+    async (req, res) => {
+        getIngredients()
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.end(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // GET ONE ------------------
@@ -48,21 +50,23 @@ const getIngredient = (id) => {
             throw err
         })
 }
-router.get('/:id/', async (req, res) => {
-    getIngredient(req.params.id)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.get(
+    '/:id/',
+    async (req, res) => {
+        getIngredient(req.params.id)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.end(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // GET SPELLS FROM ONE ------------------
@@ -73,21 +77,23 @@ const getSpellsFromOne = (id) => {
             throw err
         })
 }
-router.get('/:id/spells', async (req, res) => {
-    getSpellsFromOne(req.params.id)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.get(
+    '/:id/spells',
+    async (req, res) => {
+        getSpellsFromOne(req.params.id)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.end(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // CREATE ONE ------------------
@@ -98,21 +104,24 @@ const addIngredient = (igr) => {
             throw err
         })
 }
-router.post('/', async (req, res) => {
-    addIngredient(req.body)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.post(
+    '/',
+    authGuard(['SUBMIT_INGREDIENTS']),
+    async (req, res) => {
+        addIngredient(req.body)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.send(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // UPDATE ONE ------------------
@@ -123,21 +132,24 @@ const updateIngredient = (id, igr) => {
             throw err
         })
 }
-router.put('/:id/', async (req, res) => {
-    updateIngredient(req.params.id, req.body)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.put(
+    '/:id/',
+    authGuard(['SUBMIT_INGREDIENTS', 'MODIFY_INGREDIENTS']),
+    async (req, res) => {
+        updateIngredient(req.params.id, req.body)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.send(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // DELETE ONE ------------------
@@ -148,21 +160,24 @@ const deleteIngredient = (id) => {
             throw err
         })
 }
-router.delete('/:id/', async (req, res) => {
-    deleteIngredient(req.params.id)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.delete(
+    '/:id/',
+    authGuard(['SUBMIT_INGREDIENTS', 'MODIFY_INGREDIENTS', 'DELETE_INGREDIENTS']),
+    async (req, res) => {
+        deleteIngredient(req.params.id)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.send(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 // Param validations
 router.param('id', functions.paramIntCheck)
