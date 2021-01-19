@@ -4,15 +4,15 @@
 const express = require('express');
 let router = express.Router();
 
-// Connection
-const functions = require('../functions');
-
 // AuthGuard
 const authGuard = require('./middleware/authGuard');
 
 // Repository
 const SpellReposity = require('../repositories/spell-repository');
 const Spells = new SpellReposity();
+
+// Functions
+const functions = require('../functions');
 
 // ROUTES
 // GET ALL PUBLIC ------------------

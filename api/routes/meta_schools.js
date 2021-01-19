@@ -4,7 +4,7 @@
 const express = require('express');
 let router = express.Router();
 
-// Connection
+// Functions
 const functions = require('../functions');
 
 // Repository

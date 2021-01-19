@@ -4,12 +4,15 @@
 const express = require('express');
 let router = express.Router();
 
-// Connection
-const functions = require('../functions');
+// AuthGuard
+const authGuard = require('./middleware/authGuard');
 
 // Repository
 const VariableRepository = require('../repositories/variable-repository');
 const Variables = new VariableRepository();
+
+// Functions
+const functions = require('../functions');
 
 // ROUTES
 // GET ALL ------------------

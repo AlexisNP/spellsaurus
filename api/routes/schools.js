@@ -4,12 +4,15 @@
 const express = require('express');
 let router = express.Router();
 
-// Connection
-const functions = require('../functions');
+// AuthGuard
+const authGuard = require('./middleware/authGuard');
 
 // Repository
 const SchoolRepository = require('../repositories/school-repository');
 const Schools = new SchoolRepository();
+
+// Functions
+const functions = require('../functions');
 
 // ROUTES
 // GET ALL ------------------
@@ -20,21 +23,23 @@ const getSchools = () => {
             throw err
         })
 }
-router.get('/', async (req, res) => {
-    getSchools()
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.get(
+    '/',
+    async (req, res) => {
+        getSchools()
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.end(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // GET ONE ------------------
@@ -45,21 +50,23 @@ const getSchool = (id) => {
             throw err
         })
 }
-router.get('/:id/', async (req, res) => {
-    getSchool(req.params.id)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.get(
+    '/:id/',
+    async (req, res) => {
+        getSchool(req.params.id)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.end(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // GET SPELLS FROM ONE ------------------
@@ -70,21 +77,23 @@ const getSpellsFromOne = (id) => {
             throw err
         })
 }
-router.get('/:id/spells', async (req, res) => {
-    getSpellsFromOne(req.params.id)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.get(
+    '/:id/spells',
+    async (req, res) => {
+        getSpellsFromOne(req.params.id)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.end(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // CREATE ONE ------------------
@@ -95,21 +104,24 @@ const addSchool = (s) => {
             throw err
         })
 }
-router.post('/', async (req, res) => {
-    addSchool(req.body)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.post(
+    '/',
+    authGuard(['SUBMIT_SCHOOL']),
+    async (req, res) => {
+        addSchool(req.body)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.send(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 // UPDATE ONE ------------------
 const updateSchool = (id, s) => {
@@ -119,21 +131,23 @@ const updateSchool = (id, s) => {
             throw err
         })
 }
-router.put('/:id/', async (req, res) => {
-    updateSchool(req.params.id, req.body)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.put(
+    '/:id/',
+    async (req, res) => {
+        updateSchool(req.params.id, req.body)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.send(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 
 // DELETE ONE ------------------
@@ -144,21 +158,23 @@ const deleteSchool = (id) => {
             throw err
         })
 }
-router.delete('/:id/', async (req, res) => {
-    deleteSchool(req.params.id)
-        .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
-        })
-        .catch(err => {
-            res.status(err.code).send(JSON.stringify(
-                {
-                    "error": err.message,
-                    "code": err.code
-                })
-            )
-        })
-})
+router.delete(
+    '/:id/',
+    async (req, res) => {
+        deleteSchool(req.params.id)
+            .then(v => {
+                res.setHeader('Content-Type', 'application/json;charset=utf-8')
+                res.send(JSON.stringify(v))
+            })
+            .catch(err => {
+                res.status(err.code).send(JSON.stringify(
+                    {
+                        "error": err.message,
+                        "code": err.code
+                    })
+                )
+            })
+    })
 
 // Param validations
 router.param('id', functions.paramIntCheck)

@@ -4,6 +4,9 @@
 const express = require('express');
 let router = express.Router();
 
+// AuthGuard
+const authGuard = require('./middleware/authGuard');
+
 // Repository
 const UserRepository = require('../repositories/user-repository');
 const Users = new UserRepository();

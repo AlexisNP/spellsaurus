@@ -4,12 +4,15 @@
 const express = require('express');
 let router = express.Router();
 
-// Connection
-const functions = require('../functions');
+// AuthGuard
+const authGuard = require('./middleware/authGuard');
 
 // Repository
 const IngredientRepository = require('../repositories/ingredient-repository');
 const Ingredients = new IngredientRepository();
+
+// Functions
+const functions = require('../functions');
 
 // ROUTES
 // GET ALL ------------------
