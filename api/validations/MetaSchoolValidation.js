@@ -7,6 +7,6 @@ const MetaSchool = {
         "schools": { "type": "array" }
     },
     "required": ["name", "description"]
-}
+};
 
-module.exports = MetaSchool
+module.exports = MetaSchool;

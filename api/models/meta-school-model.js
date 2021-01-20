@@ -1,13 +1,12 @@
-'use strict'
-const bookshelf = require('../database/bookshelf').bookshelf
+const bookshelf = require('../database/bookshelf').bookshelf;
 
-require('./school-model')
+require('./school-model');
 
 let MetaSchool = bookshelf.Model.extend({
     tableName: 'meta_school',
     schools() {
-        return this.hasMany('School')
+        return this.hasMany('School');
     }
-})
+});
 
-module.exports = bookshelf.model('MetaSchool', MetaSchool)
+module.exports = bookshelf.model('MetaSchool', MetaSchool);

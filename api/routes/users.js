@@ -1,11 +1,9 @@
-'use strict'
-
 // Router
 const express = require('express');
 let router = express.Router();
 
 // AuthGuard
-const authGuard = require('./middleware/authGuard');
+// const authGuard = require('./middleware/authGuard');
 
 // Repository
 const UserRepository = require('../repositories/user-repository');
@@ -16,14 +14,14 @@ const Users = new UserRepository();
 const getUsers = () => {
     return Users.getAll()
         .catch(err => {
-            throw err
-        })
-}
+            throw err;
+        });
+};
 router.get('/', async (req, res) => {
     getUsers()
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.end(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -31,23 +29,23 @@ router.get('/', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
-})
+            );
+        });
+});
 
 
 // GET ONE FROM UUID ------------------
 const getUserByUUID = (uuid) => {
     return Users.getOneByUUID(uuid)
         .catch(err => {
-            throw err
-        })
-}
+            throw err;
+        });
+};
 router.get('/:uuid/', async (req, res) => {
     getUserByUUID(req.params.uuid)
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.end(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -55,22 +53,22 @@ router.get('/:uuid/', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
-})
+            );
+        });
+});
 
 // GET SPELLS FROM ONE ------------------
 const getSpellsFromUser = (uuid) => {
     return Users.getSpellsFromOne(uuid)
         .catch(err => {
-            throw err
-        })
-}
+            throw err;
+        });
+};
 router.get('/:uuid/spells', async (req, res) => {
     getSpellsFromUser(req.params.uuid)
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.end(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -78,23 +76,23 @@ router.get('/:uuid/spells', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
-})
+            );
+        });
+});
 
 
 // CHECK IF MAIL IS AVAILABLE ------------------
 const checkIfEmailAvailable = (mail) => {
     return Users.checkIfEmailAvailable(mail)
         .catch(err => {
-            throw err
-        })
-}
+            throw err;
+        });
+};
 router.get('/available/:mail/', async (req, res) => {
     checkIfEmailAvailable(req.params.mail)
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.end(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -102,23 +100,23 @@ router.get('/available/:mail/', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
-})
+            );
+        });
+});
 
 
 // CREATE ONE ------------------
 const addUser = (u) => {
     return Users.addOne(u)
         .catch(err => {
-            throw err
-        })
-}
+            throw err;
+        });
+};
 router.post('/', async (req, res) => {
     addUser(req.body)
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.send(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -126,9 +124,9 @@ router.post('/', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
-})
+            );
+        });
+});
 
 
 // VERIFY A USER
@@ -136,13 +134,13 @@ const verifyUser = (token) => {
     return Users.verifyUser(token)
         .catch(err => {
             throw err;
-        })
-}
+        });
+};
 router.get('/verification/:token', async (req, res) => {
     verifyUser(req.params.token)
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.send(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.send(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -150,22 +148,22 @@ router.get('/verification/:token', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
+            );
+        });
 });
 
 // LOG A USER ------------------
 const logUser = (mail, password) => {
     return Users.logUser(mail, password)
         .catch(err => {
-            throw err
-        })
-}
+            throw err;
+        });
+};
 router.post('/login', async (req, res) => {
     logUser(req.body.mail, req.body.password)
         .then(v => {
-            res.setHeader('Content-Type', 'application/json;charset=utf-8')
-            res.end(JSON.stringify(v))
+            res.setHeader('Content-Type', 'application/json;charset=utf-8');
+            res.end(JSON.stringify(v));
         })
         .catch(err => {
             res.status(err.code).send(JSON.stringify(
@@ -173,8 +171,8 @@ router.post('/login', async (req, res) => {
                     "error": err.message,
                     "code": err.code
                 })
-            )
-        })
-})
+            );
+        });
+});
 
-module.exports = router
+module.exports = router;

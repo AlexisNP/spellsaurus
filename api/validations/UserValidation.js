@@ -7,6 +7,6 @@ const User = {
         "password": { "type": "string" },
     },
     "required": ["name", "password", "mail"]
-}
+};
 
-module.exports = User
+module.exports = User;

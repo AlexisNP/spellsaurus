@@ -14,8 +14,8 @@ const getTemplateFile = (path) => {
             } else {
                 resolve(html);
             }
-        })
-    })
+        });
+    });
 };
 
 /**
@@ -50,12 +50,12 @@ const sendRegistrationMail = (data) => {
         .catch(err => {
             console.log(err);
         });
-}
+};
 
-const sendBanEmail = (date) => {
-    return null;
-}
+// const sendBanEmail = (date) => {
+//     return null;
+// };
 
 module.exports = {
     sendRegistrationMail,
-}
+};

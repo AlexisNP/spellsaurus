@@ -1,6 +1,3 @@
-// MODULES
-const fs = require('fs');
-
 // Setting up the database connection
 const knex = require('knex')({
     client: "mysql",

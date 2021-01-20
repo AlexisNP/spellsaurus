@@ -34,6 +34,6 @@ const Spell = {
         }
     },
     "required": ["name", "description"]
-}
+};
 
-module.exports = Spell
+module.exports = Spell;

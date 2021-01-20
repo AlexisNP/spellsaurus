@@ -1,4 +1,3 @@
-'use strict'
 const bookshelf = require('../database/bookshelf').bookshelf;
 
 require('./role-model');
@@ -13,6 +12,6 @@ let User = bookshelf.Model.extend({
     spells() {
         return this.hasMany('Spell', 'author_id');
     }
-})
+});
 
-module.exports = bookshelf.model('User', User)
+module.exports = bookshelf.model('User', User);

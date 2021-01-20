@@ -7,6 +7,6 @@ const School = {
         "meta_school_id": { "type": "number" },
     },
     "required": ["name", "description", "meta_school_id"]
-}
+};
 
-module.exports = School
+module.exports = School;

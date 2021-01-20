@@ -23,12 +23,24 @@ class SpellRepository {
 
             let query = new model();
 
-            if (name) { query.where('name', 'like', `%${name}%`) }
-            if (description) { query.where('description', 'like', `%${description}%`) }
-            if (level) { query.where({ 'level': level }) }
-            if (charge) { query.where({ 'charge': charge }) }
-            if (cost) { query.where({ 'cost': cost }) }
-            if (ritual) { query.where({ 'is_ritual': ritual }) }
+            if (name) {
+                query.where('name', 'like', `%${name}%`)
+            }
+            if (description) {
+                query.where('description', 'like', `%${description}%`)
+            }
+            if (level) {
+                query.where({ 'level': level })
+            }
+            if (charge) {
+                query.where({ 'charge': charge })
+            }
+            if (cost) {
+                query.where({ 'cost': cost })
+            }
+            if (ritual) {
+                query.where({ 'is_ritual': ritual })
+            }
 
             query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients', 'author'] })
                 .then(v => {
@@ -49,12 +61,24 @@ class SpellRepository {
 
             let query = new model().where({ 'public': 1 })
 
-            if (name) { query.where('name', 'like', `%${name}%`) }
-            if (description) { query.where('description', 'like', `%${description}%`) }
-            if (level) { query.where({ 'level': level }) }
-            if (charge) { query.where({ 'charge': charge }) }
-            if (cost) { query.where({ 'cost': cost }) }
-            if (ritual) { query.where({ 'is_ritual': ritual }) }
+            if (name) {
+                query.where('name', 'like', `%${name}%`)
+            }
+            if (description) {
+                query.where('description', 'like', `%${description}%`)
+            }
+            if (level) {
+                query.where({ 'level': level })
+            }
+            if (charge) {
+                query.where({ 'charge': charge })
+            }
+            if (cost) {
+                query.where({ 'cost': cost })
+            }
+            if (ritual) {
+                query.where({ 'is_ritual': ritual })
+            }
 
             query.fetchAll({ withRelated: ['schools.meta_schools', 'variables', 'ingredients', 'author'] })
                 .then(v => {
@@ -226,18 +250,21 @@ class SpellRepository {
                                         let schools = spell.related('school');
                                         return spell.schools().detach(schools, { transacting: t });
                                     }
+                                    return spell
                                 })
                                 .tap(spell => {
                                     if (s.variables) {
                                         let variables = spell.related('variable');
                                         return spell.variables().detach(variables, { transacting: t });
                                     }
+                                    return spell;
                                 })
                                 .tap(spell => {
                                     if (s.ingredients) {
                                         let ingredients = spell.related('ingredient');
                                         return spell.ingredients().detach(ingredients, { transacting: t });
                                     }
+                                    return spell;
                                 })
                                 .tap(spell => {
                                     return spell

@@ -6,6 +6,6 @@ const Ingredient = {
         "description": { "type": "string" }
     },
     "required": ["name", "description"]
-}
+};
 
-module.exports = Ingredient
+module.exports = Ingredient;

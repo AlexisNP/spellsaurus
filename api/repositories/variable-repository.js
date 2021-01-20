@@ -1,17 +1,16 @@
-'use strict'
 // Bookshelf
-const bookshelf = require('../database/bookshelf').bookshelf
-const model = require('../models/variable-model')
+const bookshelf = require('../database/bookshelf').bookshelf;
+const model = require('../models/variable-model');
 
 // Model validation
-const Validator = require('jsonschema').Validator
-const validator = new Validator()
-const VariableValidation = require("../validations/VariableValidation")
-validator.addSchema(VariableValidation, "/VariableValidation")
+const Validator = require('jsonschema').Validator;
+const validator = new Validator();
+const VariableValidation = require("../validations/VariableValidation");
+validator.addSchema(VariableValidation, "/VariableValidation");
 
 // Validations
-const isXSSAttempt = require('../functions').isXSSAttempt
-const isEmptyObject = require('../functions').isEmptyObject
+const isXSSAttempt = require('../functions').isXSSAttempt;
+const isEmptyObject = require('../functions').isEmptyObject;
 
 class VariableRepository {
 
@@ -23,16 +22,16 @@ class VariableRepository {
             new model()
                 .fetchAll({ withRelated: ['spells'] })
                 .then(v => {
-                    resolve(v.toJSON({ omitPivot: true }))
+                    resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err);
                     reject({
                         "message": "Il n'existe aucune variable disponible.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 
 
@@ -42,16 +41,16 @@ class VariableRepository {
                 .where({ 'id': id })
                 .fetch({ withRelated: ['spells'] })
                 .then(v => {
-                    resolve(v.toJSON({ omitPivot: true }))
+                    resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err);
                     reject({
                         "message": "La variable en question n'a pas pu être trouvée.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 
     getSpellsFromOne(id) {
@@ -60,16 +59,16 @@ class VariableRepository {
                 .where({ 'id': id })
                 .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools'] })
                 .then(v => {
-                    resolve(v.toJSON({ omitPivot: true }))
+                    resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err);
                     reject({
                         "message": "Les sortilèges liés à cette variable n'ont pas pu être récupérés.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 
     addOne(vr) {
@@ -98,24 +97,24 @@ class VariableRepository {
                         transacting: t
                     })
                         .catch(err => {
-                            throw err
-                        })
+                            throw err;
+                        });
                 })
                     .then(v => {
-                        return v.load(['spells'])
+                        return v.load(['spells']);
                     })
                     .then(v => {
-                        resolve(this.getOne(v.id))
+                        resolve(this.getOne(v.id));
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log(err);
                         reject({
                             "message": "Une erreur d'insertion s'est produite.",
                             "code": 500,
                         });
-                    })
+                    });
             }
-        })
+        });
     }
 
     updateOne(id, vr) {
@@ -148,33 +147,33 @@ class VariableRepository {
                                 transacting: t
                             })
                                 .catch(err => {
-                                    console.log(err)
-                                    throw err
-                                })
+                                    console.log(err);
+                                    throw err;
+                                });
                         })
                             .then(v => {
-                                return v.load(['spells'])
+                                return v.load(['spells']);
                             })
                             .then(v => {
-                                resolve(this.getOne(v.id))
+                                resolve(this.getOne(v.id));
                             })
                             .catch(err => {
-                                console.log(err)
+                                console.log(err);
                                 reject({
                                     "message": "Une erreur d'insertion s'est produite.",
                                     "code": 500,
                                 });
-                            })
+                            });
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log(err);
                         reject({
                             "message": "La variable en question n'a pas été trouvée.",
                             "code": 404,
                         });
-                    })
+                    });
             }
-        })
+        });
     }
 
     deleteOne(id) {
@@ -183,23 +182,23 @@ class VariableRepository {
                 .where({ 'id': id })
                 .fetch({ require: true, withRelated: ['spells'] })
                 .then(v => {
-                    v.spells().detach()
-                    v.destroy()
+                    v.spells().detach();
+                    v.destroy();
                 })
                 .then(() => {
                     resolve({
                         'message': 'Variable with ID ' + id + ' successfully deleted !'
-                    })
+                    });
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.log(err);
                     reject({
                         "message": "La variable en question n'a pas été trouvée.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 }
 
-module.exports = VariableRepository
+module.exports = VariableRepository;

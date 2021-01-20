@@ -5,6 +5,6 @@ const Variable = {
         "description": { "type": "string" },
     },
     "required": ["description"]
-}
+};
 
-module.exports = Variable
+module.exports = Variable;

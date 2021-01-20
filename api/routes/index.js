@@ -15,4 +15,4 @@ module.exports = {
     ingredients,
     variables,
     users,
-}
+};

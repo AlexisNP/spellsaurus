@@ -11,13 +11,13 @@ const authGuard = (permissions) => {
 
         // Uses repo to validate the associated perms with the token
         Users.checkAPITokenPerms(api_token, permissions)
-            .then(v => {
+            .then(() => {
                 next();
             })
             .catch(err => {
-                res.status(err.code).send(JSON.stringify(err))
+                res.status(err.code).send(JSON.stringify(err));
             });
-    }
-}
+    };
+};
 
 module.exports = authGuard;

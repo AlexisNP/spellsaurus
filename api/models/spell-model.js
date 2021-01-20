@@ -1,9 +1,8 @@
-'use strict'
-const bookshelf = require('../database/bookshelf').bookshelf
+const bookshelf = require('../database/bookshelf').bookshelf;
 
-require('./school-model')
-require('./variable-model')
-require('./ingredient-model')
+require('./school-model');
+require('./variable-model');
+require('./ingredient-model');
 
 let Spell = bookshelf.Model.extend({
     tableName: 'spell',
@@ -20,6 +19,6 @@ let Spell = bookshelf.Model.extend({
     ingredients() {
         return this.belongsToMany( 'Ingredient', 'spell_ingredient' );
     }
-})
+});
 
-module.exports = bookshelf.model('Spell', Spell)
+module.exports = bookshelf.model('Spell', Spell);

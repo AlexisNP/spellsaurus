@@ -6,11 +6,10 @@ const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cors = require('cors'); // module to format the json response
-const dotenv = require('dotenv').config();
+require('dotenv').config();
 
 // CONSTANTS
 const port = 2814;
-const base_url = 'http://localhost:2814/api';
 
 // Import routes
 const routes = require('./routes');

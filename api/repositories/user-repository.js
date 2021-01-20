@@ -360,7 +360,7 @@ class UserRepository {
                             })
                             .catch(err => {
                                 // If the account already has an API key linked...
-                                if (err.errno == 1062) {
+                                if (err.errno === 1062) {
                                     this.fetchAPIKey(user.uuid)
                                         .then(old_api_key => {
                                             reject({
@@ -473,7 +473,7 @@ class UserRepository {
                 })
 
                 // Unhandled errors
-                .catch(err => {
+                .catch(() => {
                     reject({
                         "message": "Une erreur inconnue est survenue.",
                         "code": 500,
@@ -541,7 +541,7 @@ class UserRepository {
                     resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
-                    console.log(err);
+                    reject(err);
                 })
         })
     }

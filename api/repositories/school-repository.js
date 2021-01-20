@@ -1,17 +1,16 @@
-'use strict'
 // Bookshelf
-const bookshelf = require('../database/bookshelf').bookshelf
-const model = require('../models/school-model')
+const bookshelf = require('../database/bookshelf').bookshelf;
+const model = require('../models/school-model');
 
 // Model validation
-const Validator = require('jsonschema').Validator
-const validator = new Validator()
-const SchoolValidation = require("../validations/SchoolValidation")
-validator.addSchema(SchoolValidation, "/SchoolValidation")
+const Validator = require('jsonschema').Validator;
+const validator = new Validator();
+const SchoolValidation = require("../validations/SchoolValidation");
+validator.addSchema(SchoolValidation, "/SchoolValidation");
 
 // Validations
-const isXSSAttempt = require('../functions').isXSSAttempt
-const isEmptyObject = require('../functions').isEmptyObject
+const isXSSAttempt = require('../functions').isXSSAttempt;
+const isEmptyObject = require('../functions').isEmptyObject;
 
 class SchoolRepository {
 
@@ -23,7 +22,7 @@ class SchoolRepository {
             new model()
                 .fetchAll({ withRelated: ['meta_schools'] })
                 .then(v => {
-                    resolve(v.toJSON({ omitPivot: true }))
+                    resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
                     console.log(err);
@@ -31,8 +30,8 @@ class SchoolRepository {
                         "message": "Il n'existe aucune école disponible.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 
     getOne(id) {
@@ -41,7 +40,7 @@ class SchoolRepository {
                 .where({ 'id': id })
                 .fetch({ withRelated: ['meta_schools'] })
                 .then(v => {
-                    resolve(v.toJSON({ omitPivot: true }))
+                    resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
                     console.log(err);
@@ -49,8 +48,8 @@ class SchoolRepository {
                         "message": "L'école en question n'a pas pu être trouvée.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 
     getSpellsFromOne(id) {
@@ -59,7 +58,7 @@ class SchoolRepository {
                 .where({ 'id': id })
                 .fetch({ withRelated: ['spells', 'spells.schools', 'spells.variables', 'spells.ingredients', 'spells.schools.meta_schools'] })
                 .then(v => {
-                    resolve(v.toJSON({ omitPivot: true }))
+                    resolve(v.toJSON({ omitPivot: true }));
                 })
                 .catch(err => {
                     console.log(err);
@@ -67,8 +66,8 @@ class SchoolRepository {
                         "message": "Les sortilèges de cette école n'ont pas pu être récupérés.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 
     addOne(s) {
@@ -99,8 +98,8 @@ class SchoolRepository {
                         transacting: t
                     })
                         .catch(err => {
-                            throw err
-                        })
+                            throw err;
+                        });
                 })
                     .then(v => {
                         return v.load(['meta_schools']);
@@ -109,14 +108,14 @@ class SchoolRepository {
                         resolve(this.getOne(v.id));
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log(err);
                         reject({
                             "message": "Une erreur d'insertion s'est produite.",
                             "code": 500,
-                        })
-                    })
+                        });
+                    });
             }
-        })
+        });
     }
 
     updateOne(id, s) {
@@ -151,23 +150,23 @@ class SchoolRepository {
                                 transacting: t
                             })
                                 .catch(err => {
-                                    console.log(err)
-                                    throw err
-                                })
+                                    console.log(err);
+                                    throw err;
+                                });
                         })
                             .then(v => {
-                                return v.load(['meta_schools'])
+                                return v.load(['meta_schools']);
                             })
                             .then(v => {
-                                resolve(this.getOne(v.id))
+                                resolve(this.getOne(v.id));
                             })
                             .catch(err => {
-                                console.log(err)
+                                console.log(err);
                                 reject({
                                     "message": "Une erreur d'insertion s'est produite.",
                                     "code": 500,
-                                })
-                            })
+                                });
+                            });
                     })
                     .catch(err => {
                         console.log(err);
@@ -175,9 +174,9 @@ class SchoolRepository {
                             "message": "L'école en question n'a pas été trouvée.",
                             "code": 404,
                         });
-                    })
+                    });
             }
-        })
+        });
     }
 
     deleteOne(id) {
@@ -186,13 +185,13 @@ class SchoolRepository {
                 .where({ 'id': id })
                 .fetch({ require: true, withRelated: ['spells', 'meta_schools'] })
                 .then(v => {
-                    v.spells().detach()
-                    v.destroy()
+                    v.spells().detach();
+                    v.destroy();
                 })
                 .then(() => {
                     resolve({
                         'message': 'School with ID ' + id + ' successfully deleted !'
-                    })
+                    });
                 })
                 .catch(err => {
                     console.log(err);
@@ -200,9 +199,9 @@ class SchoolRepository {
                         "message": "L'école en question n'a pas été trouvée.",
                         "code": 404,
                     });
-                })
-        })
+                });
+        });
     }
 }
 
-module.exports = SchoolRepository
+module.exports = SchoolRepository;
