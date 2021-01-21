@@ -1,12 +1,12 @@
-import api from './api'
+import api from './api';
 
-const resource = "/variables"
+const resource = "/variables";
 
 export default {
-    getAll() {
-        return api.get(`${resource}`)
-    },
-    getOne(id) {
-        return api.get(`${resource}/${id}`)
-    },
-}
+  getAll() {
+    return api.get(`${resource}`);
+  },
+  getOne(id) {
+    return api.get(`${resource}/${id}`);
+  },
+};

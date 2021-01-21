@@ -1,8 +1,13 @@
 <template>
-  <div class="container-fluid p-4" id="spell-container">
-    <h1 class="display-3 font-display mb-3">{{ school.name }}</h1>
+  <div
+    id="spell-container"
+    class="container-fluid p-4"
+  >
+    <h1 class="display-3 font-display mb-3">
+      {{ school.name }}
+    </h1>
     <p>{{ school.description }}</p>
-    <spell-list :school_id="id"/>
+    <spell-list :school_id="id" />
   </div>
 </template>
 
@@ -11,14 +16,14 @@
 import { RepositoryFactory } from "@/api/repositories";
 const Schools = RepositoryFactory.get('schools');
 
-import SpellsList from "~/components/spells/spells-list";
+import SpellsList from "@/components/spells/spells-list";
 
 export default {
-  name: 'single-school-page',
+  name: 'SingleSchoolPage',
   metaInfo() {
     return {
       titleTemplate: `%s - ${this.school.name}`,
-    }
+    };
   },
   components: {
     'spell-list': SpellsList,
@@ -30,7 +35,7 @@ export default {
       errors: {
         loading: "",
       }
-    }
+    };
   },
   created() {
     Schools.getOne(this.id)
@@ -41,7 +46,7 @@ export default {
         console.log(err);
       });
   },
-}
+};
 </script>
 
 <style lang="scss" scoped>

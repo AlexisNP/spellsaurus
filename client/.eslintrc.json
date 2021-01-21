@@ -1,0 +1,33 @@
+{
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "impliedStrict": true
+    }
+  },
+  "extends": [
+    "plugin:vue/vue3-recommended",
+    "eslint:recommended"
+  ],
+  "rules": {
+    "indent": ["error", 2],
+    "accessor-pairs": "warn",
+    "array-callback-return": "error",
+    "brace-style": "warn",
+    "consistent-return": "error",
+    "default-case": "error",
+    "eqeqeq": "warn",
+    "no-case-declarations": "error",
+    "no-empty-pattern": "warn",
+    "no-fallthrough": "error",
+    "no-unused-vars": "error",
+    "no-useless-catch": "error",
+    "no-var": "error",
+    "semi": "warn",
+    "no-extra-semi": "error",
+    "yoda": "warn"
+  }
+}

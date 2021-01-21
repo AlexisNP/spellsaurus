@@ -1,70 +1,76 @@
 // Core
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import App from './app.vue'
-import VueMeta from 'vue-meta'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import App from './app.vue';
+import VueMeta from 'vue-meta';
 
 Vue.use(VueMeta, {
   // optional pluginOptions
   refreshOnceOnNavigation: true
-})
+});
 
 // Environment
-require('dotenv').config()
+import dotenv from 'dotenv';
+dotenv.config();
 
-import store from './store'
+// Store
+import store from './store';
 
-import Globals from './global-components.js'
+// Global components
+import Globals from './global-components.js';
 Globals.forEach(component => {
-    Vue.component(component.name, component)
+  Vue.component(component.name, component);
 });
 
 // Cookies
-import VueCookies from 'vue-cookies'
-Vue.use(VueCookies)
+import VueCookies from 'vue-cookies';
+Vue.use(VueCookies);
 
 // Jquery
-import jquery from 'jquery'
-window.$ = jquery
-window.jquery = jquery
+import jquery from 'jquery';
+window.$ = jquery;
+window.jquery = jquery;
 
 // Styles
 // Fonts
-import './assets/scss/_fonts.scss'
-import './assets/scss/_global.scss'
+import './assets/scss/_fonts.scss';
+import './assets/scss/_global.scss';
 
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import 'bootstrap/dist/js/bootstrap.js'
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'bootstrap/dist/js/bootstrap.js';
 
 // Plugins
-import { BootstrapVue } from 'bootstrap-vue'
-Vue.use(BootstrapVue)
+import { BootstrapVue } from 'bootstrap-vue';
+Vue.use(BootstrapVue);
 
-import { VueMasonryPlugin } from 'vue-masonry'
-Vue.use(VueMasonryPlugin)
+// Masonry (will probably get removed in the very very near future lmao)
+import { VueMasonryPlugin } from 'vue-masonry';
+Vue.use(VueMasonryPlugin);
 
-import clipboard from 'v-clipboard'
-Vue.use(clipboard)
+// Clipboard (might find a better one or code it myself idk)
+import clipboard from 'v-clipboard';
+Vue.use(clipboard);
 
 // FUNCTIONS
-var filter = (text, length, clamp) => {
-    clamp = clamp || '...';
-    var node = document.createElement('div');
-    node.innerHTML = text;
-    var content = node.textContent;
-    return content.length > length ? content.slice(0, length) + clamp : content;
-}
+// Let's be honest i will 1000% refactor this.
+let filter = (text, length, clamp) => {
+  clamp = clamp || '...';
+  let node = document.createElement('div');
+  node.innerHTML = text;
+  let content = node.textContent;
+  return content.length > length ? content.slice(0, length) + clamp : content;
+};
 Vue.filter('truncate', filter);
 
 // Router
-import router from './routes'
-Vue.use(VueRouter)
+import router from './routes';
+Vue.use(VueRouter);
 
 // Mount Vue
 const app = new Vue({
-    render: h => h(App),
-    router,
-    store: store
-})
-app.$mount('#srs')
+  render: h => h(App),
+  router,
+  store: store
+});
+app.$mount('#srs');

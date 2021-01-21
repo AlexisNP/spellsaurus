@@ -1,7 +1,7 @@
 import cookie from 'vue-cookies';
 
 // API
-import { RepositoryFactory } from "~/api/repositories";
+import { RepositoryFactory } from "@/api/repositories";
 const Users = RepositoryFactory.get('users');
 
 export const namespaced = true;
@@ -12,7 +12,7 @@ const state = {
 
 const getters = {
   getUserProfile: state => {
-    return state.profile
+    return state.profile;
   }
 };
 
@@ -40,23 +40,23 @@ const actions = {
   user_login ({ commit }, data) {
     return new Promise((resolve, reject) => {
       Users.login(data.user)
-      .then(v => {
-        let user = v.data.user;
+        .then(v => {
+          let user = v.data.user;
 
-        // Check if the use wishes to be remembered
-        if (data.remember_me) {
-          cookie.set('user_profile', user, 60 * 60 * 24 * 30); // Expires after a month
-        } else {
-          cookie.set('user_profile', user, 0); // Expires after browser session expires
-        }
+          // Check if the use wishes to be remembered
+          if (data.remember_me) {
+            cookie.set('user_profile', user, 60 * 60 * 24 * 30); // Expires after a month
+          } else {
+            cookie.set('user_profile', user, 0); // Expires after browser session expires
+          }
         
-        commit('loginUser', user);
-        resolve(user);
-      })
-      .catch(err => {
-        reject(err.response);
-      });
-    })
+          commit('loginUser', user);
+          resolve(user);
+        })
+        .catch(err => {
+          reject(err.response);
+        });
+    });
   },
 
   user_logout ({ commit }) {
@@ -72,14 +72,14 @@ const actions = {
   user_register ({ commit }, data) {
     return new Promise((resolve, reject) => {
       Users.register(data.user)
-      .then(() => {
-        commit('registerUser');
-        resolve();
-      })
-      .catch(err => {
-        reject(err.response);
-      });
-    })
+        .then(() => {
+          commit('registerUser');
+          resolve();
+        })
+        .catch(err => {
+          reject(err.response);
+        });
+    });
   }
 };
 

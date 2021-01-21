@@ -1,24 +1,24 @@
 <template>
-    <div class="lds-roller">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
+  <div class="lds-roller">
+    <div />
+    <div />
+    <div />
+    <div />
+    <div />
+    <div />
+    <div />
+    <div />
+  </div>
 </template>
 
 <script>
 export default {
-    name: 'loader',
-    data() {
-        return {
-        }
-    }
-}
+  name: 'Loader',
+  data() {
+    return {
+    };
+  }
+};
 </script>
 
 <style scoped lang="scss">

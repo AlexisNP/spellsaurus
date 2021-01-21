@@ -6,13 +6,12 @@
 
 <script>
 export default {
-  name: 'update-form',
+  name: 'UpdateForm',
   props: {
-    user: Object,
+    user: {
+      type: Object,
+      default: null,
+    },
   }
-}
+};
 </script>
-
-<style>
-
-</style>

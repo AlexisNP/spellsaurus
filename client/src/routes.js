@@ -1,21 +1,21 @@
-import VueRouter from 'vue-router'
+import VueRouter from 'vue-router';
 
-import store from './store'
+import store from './store';
 
 // Pages
-import Index from "@/pages/index-page"
+import Index from "@/pages/index-page";
 
-  import Spells from "@/pages/spells/spells-page"
-  import SpellSingle from "@/pages/spells/single-spell-page"
+import Spells from "@/pages/spells/spells-page";
+import SpellSingle from "@/pages/spells/single-spell-page";
 
-  import Schools from "./pages/schools/schools-page"
-  import SchoolSingle from "@/pages/schools/single-school-page"
+import Schools from "./pages/schools/schools-page";
+import SchoolSingle from "@/pages/schools/single-school-page";
 
-  import Timeline from "./pages/timelines/timeline-page"
+import Timeline from "./pages/timelines/timeline-page";
   
-  import Profile from "@/pages/user/profile-page"
-  import Login from "@/pages/user/login-page"
-  import Register from "@/pages/user/register-page"
+import Profile from "@/pages/user/profile-page";
+import Login from "@/pages/user/login-page";
+import Register from "@/pages/user/register-page";
 
 // Routes
 const routes = [
@@ -71,14 +71,14 @@ const routes = [
       logoutFilter: true,
     }
   },
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
   routes,
   linkActiveClass: "",
   linkExactActiveClass: "active",
-})
+});
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.loginFilter)) {
@@ -97,6 +97,6 @@ router.beforeEach((to, from, next) => {
     next();
   }
   next();
-})
+});
 
 export default router;

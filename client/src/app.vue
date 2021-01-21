@@ -1,19 +1,19 @@
 <template>
   <div id="srs">
     <header>
-      <navbar/>
+      <navbar />
     </header>
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app',
+  name: 'App',
   metaInfo: {
     title: 'Auracle',
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
